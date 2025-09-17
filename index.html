@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coffee Precision - Professional Grind Calculator</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#21809D">
+    <meta name="description" content="Professional coffee grind calculator for espresso extraction optimization">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Coffee Precision">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Icons -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%2321809D'/><text y='50' x='50' text-anchor='middle' dominant-baseline='middle' font-size='60' fill='white'>☕</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%2321809D'/><text y='50' x='50' text-anchor='middle' dominant-baseline='middle' font-size='60' fill='white'>☕</text></svg>">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Initial Screen -->
+    <div id="screen-initial" class="screen">
+        <div class="container">
+            <div class="initial-screen">
+                <div class="logo-section">
+                    <h1 class="logo">Coffee Precision</h1>
+                    <p class="version">v1.0 - Professional Extraction Calculator</p>
+                    <p class="creator">International Coffee Standards</p>
+                </div>
+                <button id="start-button" class="btn btn--primary btn--lg">START</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Screen -->
+    <div id="screen-main" class="screen hidden">
+        <div class="container">
+            <div class="main-screen">
+                <h2>What would you like to do?</h2>
+                <div class="main-buttons">
+                    <button id="new-extraction-btn" class="btn btn--primary btn--lg btn--full-width main-btn">
+                        <span>New Extraction</span>
+                        <small>Start a new calibration</small>
+                    </button>
+                    <button id="archive-btn" class="btn btn--secondary btn--lg btn--full-width main-btn">
+                        <span>Previous Extractions</span>
+                        <small>Go to archive</small>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Coffee Data Input Screen -->
+    <div id="screen-coffee-data" class="screen hidden">
+        <div class="container">
+            <div class="breadcrumb">
+                <span>Step 1 of 6: Coffee Data</span>
+            </div>
+            
+            <h2>Enter your coffee data</h2>
+            <form id="coffee-form" class="form">
+                <div class="form-group">
+                    <label class="form-label">Continent and Origin Country</label>
+                    <select id="continent" class="form-control" required>
+                        <option value="">Select continent...</option>
+                    </select>
+                    <select id="country" class="form-control hidden" required>
+                        <option value="">First select a continent</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Altitude</label>
+                    <select id="altitude" class="form-control" required>
+                        <option value="">Select altitude...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Coffee Variety</label>
+                    <select id="variety" class="form-control" required>
+                        <option value="">Select variety...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Processing Method</label>
+                    <select id="processing" class="form-control" required>
+                        <option value="">Select processing...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Roast Date</label>
+                    <input type="date" id="roast-date" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Roast Level</label>
+                    <select id="roast-level" class="form-control" required>
+                        <option value="">Select roast level...</option>
+                    </select>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" id="coffee-back-btn" class="btn btn--outline">Back</button>
+                    <button type="submit" id="coffee-next-btn" class="btn btn--primary">Next</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Machine Type Selection Screen -->
+    <div id="screen-machine" class="screen hidden">
+        <div class="container">
+            <div class="breadcrumb">
+                <span>Step 2 of 6: Machine Type Selection</span>
+            </div>
+            
+            <h2>Choose your machine type</h2>
+            
+            <div class="machine-types-grid" id="machine-types-grid">
+                <!-- Populated dynamically with categories -->
+            </div>
+
+            <div id="machine-selection" class="machine-selection hidden">
+                <h3>Choose your specific machine</h3>
+                
+                <div class="form-group">
+                    <label class="form-label">Brand</label>
+                    <select id="machine-brand" class="form-control" required>
+                        <option value="">Select brand...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Model</label>
+                    <select id="machine-model" class="form-control" required>
+                        <option value="">First select a brand</option>
+                    </select>
+                </div>
+
+                <div id="machine-info" class="machine-info hidden">
+                    <div class="info-card">
+                        <p><strong>Type:</strong> <span id="machine-type-name">Pump Machines</span></p>
+                        <p><strong>Adjustment Factor:</strong> <span id="machine-adjustment">+0.0</span></p>
+                        <p><strong>Characteristics:</strong> <span id="machine-description">9 bar constant, 25-30s extraction</span></p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Water Temperature (°C)</label>
+                    <div class="temperature-container">
+                        <input type="number" id="water-temperature" class="form-control" min="85" max="100" step="0.5" value="93">
+                        <div class="temperature-suggestion">
+                            <span id="temp-suggestion">Suggested: 93°C</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" id="machine-back-btn" class="btn btn--outline">Back</button>
+                <button type="button" id="machine-next-btn" class="btn btn--primary">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grinder Selection Screen -->
+    <div id="screen-grinder" class="screen hidden">
+        <div class="container">
+            <div class="breadcrumb">
+                <span>Step 3 of 6: Grinder Selection</span>
+            </div>
+            
+            <h2>Choose your grinder</h2>
+            
+            <div class="form-group">
+                <label class="form-label">Brand</label>
+                <select id="grinder-brand" class="form-control" required>
+                    <option value="">Select brand...</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Model</label>
+                <select id="grinder-model" class="form-control" required>
+                    <option value="">First select a brand</option>
+                </select>
+            </div>
+
+            <div id="grinder-info" class="grinder-info hidden">
+                <div class="info-card">
+                    <p><strong>Precision:</strong> <span id="grinder-precision">15</span></p>
+                    <p id="grinder-description">High-quality grinder for precise results</p>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" id="grinder-back-btn" class="btn btn--outline">Back</button>
+                <button type="button" id="grinder-next-btn" class="btn btn--primary">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dose Customization Screen -->
+    <div id="screen-dose-customization" class="screen hidden">
+        <div class="container">
+            <div class="breadcrumb">
+                <span>Step 4 of 6: Dose Customization</span>
+            </div>
+            
+            <h2>Customize your dose</h2>
+            
+            <div class="dose-customization">
+                <div class="form-group">
+                    <label class="form-label">Coffee dose (grams)</label>
+                    <div class="slider-container">
+                        <input type="range" id="coffee-grams" class="slider" min="15" max="25" value="18" step="0.5">
+                        <div class="slider-value"><span id="coffee-grams-value">18</span>g</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Target liquid output (grams)</label>
+                    <div class="slider-container">
+                        <input type="range" id="liquid-grams" class="slider" min="20" max="60" value="36" step="1">
+                        <div class="slider-value"><span id="liquid-grams-value">36</span>g</div>
+                    </div>
+                </div>
+
+                <div class="ratio-display">
+                    <h3>Calculated Ratio: <span id="calculated-ratio">1:2.0</span></h3>
+                    <p id="ratio-description">Perfect espresso ratio</p>
+                </div>
+
+                <div class="dose-info">
+                    <p><strong>Brewing Method:</strong> <span id="selected-method-name">Espresso</span></p>
+                    <p><strong>Target Extraction:</strong> <span id="extraction-target">25-30 seconds</span></p>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" id="dose-back-btn" class="btn btn--outline">Back</button>
+                <button type="button" id="dose-next-btn" class="btn btn--primary">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Final Calculation Screen -->
+    <div id="screen-final-suggestion" class="screen hidden">
+        <div class="container">
+            <div class="breadcrumb">
+                <span>Step 5 of 6: Your Optimal Setting</span>
+            </div>
+            
+            <h2>Your optimal grind setting</h2>
+            
+            <div class="final-suggestion">
+                <div class="suggestion-card test-verified">
+                    <h3 class="suggestion-title">🎯 RECOMMENDED GRIND SETTING</h3>
+                    <div class="suggestion-content">
+                        <p class="grinder-setting">Set your <span id="final-grinder-brand">Varia</span> <span id="final-grinder-model">VS3</span> to:</p>
+                        <h4 class="click-setting"><span id="suggested-click">2.5</span></h4>
+                        <p class="micron-target">Target grind: <span id="target-microns">250</span> microns</p>
+                        <div class="machine-type-info">
+                            <p><strong>Machine Type:</strong> <span id="final-machine-type">Pump Machines</span> <span id="final-machine-icon">⚡</span></p>
+                            <p><strong>Applied Correction:</strong> <span id="final-machine-adjustment">+0.0</span></p>
+                        </div>
+                        <div class="optimization-text">
+                            <p>This setting is optimized for:</p>
+                            <ul id="optimization-details">
+                                <li id="coffee-description">Costa Rica Pacamara Anaerobic at 1500m</li>
+                                <li id="method-description">Espresso with 18g coffee to 36g liquid</li>
+                                <li id="temp-description">Temperature 94°C</li>
+                                <li id="calculation-explanation">Algorithm calibrated on Costa Rica test case</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="calculation-results" id="calculation-results">
+                    <h4>Settings for all machine types:</h4>
+                    <div class="results-grid" id="results-grid">
+                        <!-- Populated with calculations for all machine types -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" id="final-back-btn" class="btn btn--outline">Back</button>
+                <button type="button" id="final-next-btn" class="btn btn--primary">Start Brewing</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Evaluation Screen -->
+    <div id="screen-evaluation" class="screen hidden">
+        <div class="container">
+            <div class="breadcrumb">
+                <span>Step 6 of 6: Evaluation</span>
+            </div>
+            
+            <h2>Rate your extraction</h2>
+            
+            <div class="evaluation-form">
+                <div class="form-group">
+                    <label class="form-label">Overall Rating</label>
+                    <div class="star-rating">
+                        <span class="star" data-rating="1">⭐</span>
+                        <span class="star" data-rating="2">⭐</span>
+                        <span class="star" data-rating="3">⭐</span>
+                        <span class="star" data-rating="4">⭐</span>
+                        <span class="star" data-rating="5">⭐</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Tasting Notes</label>
+                    <textarea id="evaluation-notes" class="form-control" rows="4" placeholder="Describe the taste, aroma, overall quality..."></textarea>
+                </div>
+
+                <div class="adjustment-suggestions">
+                    <h4>Need to adjust?</h4>
+                    <div class="adjustment-buttons">
+                        <button type="button" class="btn btn--outline adjustment-btn" data-adjustment="finer">
+                            😬 Too sour - grind finer
+                        </button>
+                        <button type="button" class="btn btn--outline adjustment-btn" data-adjustment="coarser">
+                            😵 Too bitter - grind coarser
+                        </button>
+                        <button type="button" class="btn btn--outline adjustment-btn" data-adjustment="perfect">
+                            😍 Perfect as is!
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" id="evaluation-back-btn" class="btn btn--outline">Back</button>
+                <button type="button" id="save-archive-btn" class="btn btn--primary">Save & Archive</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Archive Screen -->
+    <div id="screen-archive" class="screen hidden">
+        <div class="container">
+            <h2>Extraction Archive</h2>
+            
+            <div class="archive-filters">
+                <input type="text" id="search-filter" class="form-control" placeholder="Search by coffee name, method, notes...">
+                <select id="method-filter" class="form-control">
+                    <option value="">All brewing methods</option>
+                </select>
+            </div>
+
+            <div id="extractions-list" class="extractions-list">
+                <!-- Extractions populated dynamically -->
+            </div>
+
+            <div class="form-actions">
+                <button type="button" id="archive-new-btn" class="btn btn--primary">New Extraction</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
